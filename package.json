@@ -4,6 +4,7 @@
   "dependencies": {
     "@angular-devkit/build-angular": "^13.3.2",
     "@angular/animations": "^11.0.0",
+    "@angular/cli": "^13.3.2",
     "@angular/common": "^11.0.0",
     "@angular/compiler": "^13.3.2",
     "@angular/compiler-cli": "^13.3.2",
@@ -40,7 +41,6 @@
   "main": "dist/ng-select2",
   "private": true,
   "devDependencies": {
-    "@angular/cli": "^11.0.0",
     "@angular/language-service": "^11.0.0",
     "@types/node": "^16.11.6",
     "angular-cli-ghpages": "^0.6.2",
