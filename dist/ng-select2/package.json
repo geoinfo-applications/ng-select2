@@ -1,0 +1,38 @@
+{
+  "name": "ng-select2",
+  "version": "1.4.1",
+  "description": "Angular wrapper component of jQuery select2.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tealpartners/ng-select2/"
+  },
+  "keywords": [
+    "select2",
+    "angular"
+  ],
+  "author": "Muhammad Arsal Abdullah <muhammadarsal.mail@gmail.com>",
+  "contributors": [
+    "Muhammad Arsal Abdullah <muhammadarsal.mail@gmail.com>",
+    "Stijn Goethals <stijn@tealpartners.com>"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "@angular/common": "^11.0.0",
+    "@angular/core": "^11.0.0",
+    "@types/jquery": "3.5.x",
+    "@types/select2": "^4.0.x",
+    "select2": "^4.0.x",
+    "jquery": "3.5.x"
+  },
+  "dependencies": {
+    "tslib": "^2.0.0"
+  },
+  "main": "bundles/ng-select2.umd.js",
+  "module": "fesm2015/ng-select2.js",
+  "es2015": "fesm2015/ng-select2.js",
+  "esm2015": "esm2015/ng-select2.js",
+  "fesm2015": "fesm2015/ng-select2.js",
+  "typings": "ng-select2.d.ts",
+  "metadata": "ng-select2.metadata.json",
+  "sideEffects": false
+}
