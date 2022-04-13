@@ -29,8 +29,8 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "github": "ng build --configuration production --base-href https://tealpartners.github.io/ng-select2/ && npx angular-cli-ghpages --dir dist-site/ng-select2",
-    "packagr": "npx cpy-cli README.md .\\projects\\ng-select2 && ng-packagr -p projects/ng-select2/ng-package.json",
-    "packagr-prod": "npx cpy-cli README.md .\\projects\\ng-select2 && ng-packagr -p projects/ng-select2/ng-package.prod.json",
+    "packagr": "npx ng-packagr -p projects/ng-select2/ng-package.json",
+    "packagr-prod": "npx ng-packagr -p projects/ng-select2/ng-package.prod.json",
     "postinstall": "npm run packagr-prod"
   },
   "main": "dist/ng-select2",
