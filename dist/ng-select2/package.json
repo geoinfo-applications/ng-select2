@@ -1,0 +1,50 @@
+{
+  "name": "ng-select2",
+  "version": "1.4.1",
+  "description": "Angular wrapper component of jQuery select2.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tealpartners/ng-select2/"
+  },
+  "keywords": [
+    "select2",
+    "angular"
+  ],
+  "author": "Muhammad Arsal Abdullah <muhammadarsal.mail@gmail.com>",
+  "contributors": [
+    "Muhammad Arsal Abdullah <muhammadarsal.mail@gmail.com>",
+    "Stijn Goethals <stijn@tealpartners.com>"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "@angular/common": "^11.0.0",
+    "@angular/core": "^11.0.0",
+    "@types/jquery": "3.5.x",
+    "@types/select2": "^4.0.x",
+    "select2": "^4.0.x",
+    "jquery": "3.5.x"
+  },
+  "dependencies": {
+    "tslib": "^2.0.0"
+  },
+  "module": "fesm2015/ng-select2.mjs",
+  "es2020": "fesm2020/ng-select2.mjs",
+  "esm2020": "esm2020/ng-select2.mjs",
+  "fesm2020": "fesm2020/ng-select2.mjs",
+  "fesm2015": "fesm2015/ng-select2.mjs",
+  "typings": "ng-select2.d.ts",
+  "exports": {
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./ng-select2.d.ts",
+      "esm2020": "./esm2020/ng-select2.mjs",
+      "es2020": "./fesm2020/ng-select2.mjs",
+      "es2015": "./fesm2015/ng-select2.mjs",
+      "node": "./fesm2015/ng-select2.mjs",
+      "default": "./fesm2020/ng-select2.mjs"
+    }
+  },
+  "sideEffects": false
+}
