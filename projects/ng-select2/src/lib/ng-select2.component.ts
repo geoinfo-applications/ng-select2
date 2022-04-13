@@ -76,6 +76,7 @@ export class NgSelect2Component implements AfterViewInit, OnChanges, OnDestroy, 
 
   private element: any = undefined;
   private check = false;
+  private dropdownId = Math.floor(Math.random() + Date.now());
   // private style = `CSS`;
 
   constructor(private renderer: Renderer2, public zone: NgZone, public _element: ElementRef) {
@@ -163,11 +164,23 @@ export class NgSelect2Component implements AfterViewInit, OnChanges, OnDestroy, 
         this.propagateChange(newValue);
       }
     });
+
+    /*
+     * Hacky fix for a bug in select2 with jQuery 3.6.0's new nested-focus "protection"
+     * see: https://github.com/select2/select2/issues/5993
+     * see: https://github.com/jquery/jquery/issues/4382
+     *
+     * TODO: Recheck with the select2 GH issue and remove once this is fixed on their side
+     */
+    this.element.on('select2:open', () => {
+      document.querySelector<HTMLInputElement>(`.${this.getDropdownIdClass()} .select2-search__field`).focus();
+    });
   }
 
   ngOnDestroy() {
     if (this.element) {
       this.element.off('select2:select');
+      this.element.off('select2:open');
     }
   }
 
@@ -199,6 +212,9 @@ export class NgSelect2Component implements AfterViewInit, OnChanges, OnDestroy, 
     }
 
     Object.assign(options, this.options);
+
+    const dropdownCssClass = this.getDropdownIdClass();
+    options.dropdownCssClass = options.dropdownCssClass ? options.dropdownCssClass += ` ${dropdownCssClass}` : dropdownCssClass;
 
     if (options.matcher) {
       jQuery.fn.select2.amd.require(['select2/compat/matcher'], (oldMatcher: any) => {
@@ -235,6 +251,9 @@ export class NgSelect2Component implements AfterViewInit, OnChanges, OnDestroy, 
     // });
   }
 
+  private getDropdownIdClass() {
+    return `select2-dropdown-id-${this.dropdownId}`;
+  }
 
   writeValue(value: any) {
 
