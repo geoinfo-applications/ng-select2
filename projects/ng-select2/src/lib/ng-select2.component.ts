@@ -15,11 +15,11 @@ import {
   Renderer2,
   SimpleChanges,
   ViewChild,
-  ViewEncapsulation,
+  ViewEncapsulation, ChangeDetectorRef,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Select2OptionData } from './ng-select2.interface';
-import { Options } from 'select2';
+import { Options, Select2 } from 'select2';
 
 declare var jQuery: any;
 
@@ -74,12 +74,17 @@ export class NgSelect2Component implements AfterViewInit, OnChanges, OnDestroy, 
   // emitter when value is changed
   @Output() valueChanged = new EventEmitter<string | string[]>();
 
+  // emitter when the dropdown is opened
+  @Output() onOpen = new EventEmitter<string | string[]>();
+
   private element: any = undefined;
   private check = false;
   private dropdownId = Math.floor(Math.random() + Date.now());
   // private style = `CSS`;
+  private select2?: Select2;
+  private isOpen = false;
 
-  constructor(private renderer: Renderer2, public zone: NgZone, public _element: ElementRef) {
+  constructor(private renderer: Renderer2, public zone: NgZone, public _element: ElementRef, private cdr: ChangeDetectorRef) {
   }
 
   ngDoCheck() {
@@ -109,12 +114,25 @@ export class NgSelect2Component implements AfterViewInit, OnChanges, OnDestroy, 
     }
 
     if (changes['data'] && JSON.stringify(changes['data'].previousValue) !== JSON.stringify(changes['data'].currentValue)) {
-      this.initPlugin();
+      if (this.select2) {
+        this.element.html('');
+        const dataAdapter = (this.select2 as any).dataAdapter;
+        dataAdapter.addOptions(dataAdapter.convertToOptions(this.data));
 
-      const newValue: string | string[] = this.value;
-      this.setElementValue(newValue);
-      this.valueChanged.emit(newValue);
-      this.propagateChange(newValue);
+        const newValue: string | string[] = this.value;
+        this.setElementValue(newValue);
+        this.valueChanged.emit(newValue);
+        this.propagateChange(newValue);
+        (this.select2 as any).trigger('change');
+        this.cdr.detectChanges();
+      } else {
+        this.initPlugin();
+
+        const newValue: string | string[] = this.value;
+        this.setElementValue(newValue);
+        this.valueChanged.emit(newValue);
+        this.propagateChange(newValue);
+      }
     }
 
     if (changes['value'] && changes['value'].previousValue !== changes['value'].currentValue) {
@@ -174,6 +192,13 @@ export class NgSelect2Component implements AfterViewInit, OnChanges, OnDestroy, 
      */
     this.element.on('select2:open', () => {
       document.querySelector<HTMLInputElement>(`.${this.getDropdownIdClass()} .select2-search__field`).focus();
+      if (!this.isOpen) {
+        this.onOpen.emit();
+      }
+      this.isOpen = true;
+    });
+    this.element.on('select2:close', () => {
+      this.isOpen = false;
     });
   }
 
@@ -181,6 +206,7 @@ export class NgSelect2Component implements AfterViewInit, OnChanges, OnDestroy, 
     if (this.element) {
       this.element.off('select2:select');
       this.element.off('select2:open');
+      this.element.off('select2:close');
     }
   }
 
@@ -219,17 +245,20 @@ export class NgSelect2Component implements AfterViewInit, OnChanges, OnDestroy, 
     if (options.matcher) {
       jQuery.fn.select2.amd.require(['select2/compat/matcher'], (oldMatcher: any) => {
         options.matcher = oldMatcher(options.matcher);
-        this.element.select2(options);
+        this.select2 = this.element.select2(options);
 
         if (typeof this.value !== 'undefined') {
           this.setElementValue(this.value);
         }
       });
     } else {
-      this.element.select2(options);
+      this.select2 = this.element.select2(options).data('select2');
     }
 
     this.renderer.setProperty(this.selector.nativeElement, 'disabled', this.disabled);
+    if (this.isOpen) {
+      setTimeout(() => this.element.select2('open'));
+    }
   }
 
   private setElementValue(newValue: string | string[]) {

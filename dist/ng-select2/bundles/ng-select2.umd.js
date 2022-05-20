@@ -323,11 +323,11 @@
     }
 
     var NgSelect2Component = /** @class */ (function () {
-        // private style = `CSS`;
-        function NgSelect2Component(renderer, zone, _element) {
+        function NgSelect2Component(renderer, zone, _element, cdr) {
             this.renderer = renderer;
             this.zone = zone;
             this._element = _element;
+            this.cdr = cdr;
             // value for placeholder
             this.placeholder = '';
             this.dropdownParent = '';
@@ -342,9 +342,12 @@
             this.required = null;
             // emitter when value is changed
             this.valueChanged = new core.EventEmitter();
+            // emitter when the dropdown is opened
+            this.onOpen = new core.EventEmitter();
             this.element = undefined;
             this.check = false;
             this.dropdownId = Math.floor(Math.random() + Date.now());
+            this.isOpen = false;
             this.propagateChange = function (value) { };
         }
         NgSelect2Component.prototype.ngDoCheck = function () {
@@ -369,11 +372,24 @@
                 return;
             }
             if (changes['data'] && JSON.stringify(changes['data'].previousValue) !== JSON.stringify(changes['data'].currentValue)) {
-                this.initPlugin();
-                var newValue = this.value;
-                this.setElementValue(newValue);
-                this.valueChanged.emit(newValue);
-                this.propagateChange(newValue);
+                if (this.select2) {
+                    this.element.html('');
+                    var dataAdapter = this.select2.dataAdapter;
+                    dataAdapter.addOptions(dataAdapter.convertToOptions(this.data));
+                    var newValue = this.value;
+                    this.setElementValue(newValue);
+                    // this.valueChanged.emit(newValue);
+                    this.propagateChange(newValue);
+                    this.select2.trigger('change');
+                    this.cdr.detectChanges();
+                }
+                else {
+                    this.initPlugin();
+                    var newValue = this.value;
+                    this.setElementValue(newValue);
+                    this.valueChanged.emit(newValue);
+                    this.propagateChange(newValue);
+                }
             }
             if (changes['value'] && changes['value'].previousValue !== changes['value'].currentValue) {
                 var newValue = changes['value'].currentValue;
@@ -421,12 +437,20 @@
              */
             this.element.on('select2:open', function () {
                 document.querySelector("." + _this.getDropdownIdClass() + " .select2-search__field").focus();
+                if (!_this.isOpen) {
+                    _this.onOpen.emit();
+                }
+                _this.isOpen = true;
+            });
+            this.element.on('select2:close', function () {
+                _this.isOpen = false;
             });
         };
         NgSelect2Component.prototype.ngOnDestroy = function () {
             if (this.element) {
                 this.element.off('select2:select');
                 this.element.off('select2:open');
+                this.element.off('select2:close');
             }
         };
         NgSelect2Component.prototype.initPlugin = function () {
@@ -458,16 +482,19 @@
             if (options.matcher) {
                 jQuery.fn.select2.amd.require(['select2/compat/matcher'], function (oldMatcher) {
                     options.matcher = oldMatcher(options.matcher);
-                    _this.element.select2(options);
+                    _this.select2 = _this.element.select2(options);
                     if (typeof _this.value !== 'undefined') {
                         _this.setElementValue(_this.value);
                     }
                 });
             }
             else {
-                this.element.select2(options);
+                this.select2 = this.element.select2(options).data('select2');
             }
             this.renderer.setProperty(this.selector.nativeElement, 'disabled', this.disabled);
+            if (this.isOpen) {
+                setTimeout(function () { return _this.element.select2('open'); });
+            }
         };
         NgSelect2Component.prototype.setElementValue = function (newValue) {
             var e_1, _a;
@@ -533,7 +560,8 @@
     NgSelect2Component.ctorParameters = function () { return [
         { type: core.Renderer2 },
         { type: core.NgZone },
-        { type: core.ElementRef }
+        { type: core.ElementRef },
+        { type: core.ChangeDetectorRef }
     ]; };
     NgSelect2Component.propDecorators = {
         selector: [{ type: core.ViewChild, args: ['selector', { static: true },] }],
@@ -548,7 +576,8 @@
         class: [{ type: core.Input }],
         required: [{ type: core.Input }],
         options: [{ type: core.Input }],
-        valueChanged: [{ type: core.Output }]
+        valueChanged: [{ type: core.Output }],
+        onOpen: [{ type: core.Output }]
     };
 
     var NgSelect2Module = /** @class */ (function () {

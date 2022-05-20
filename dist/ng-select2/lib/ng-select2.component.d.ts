@@ -1,4 +1,4 @@
-import { AfterViewInit, DoCheck, ElementRef, EventEmitter, NgZone, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChanges } from '@angular/core';
+import { AfterViewInit, DoCheck, ElementRef, EventEmitter, NgZone, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
 import { Select2OptionData } from './ng-select2.interface';
 import { Options } from 'select2';
@@ -6,6 +6,7 @@ export declare class NgSelect2Component implements AfterViewInit, OnChanges, OnD
     private renderer;
     zone: NgZone;
     _element: ElementRef;
+    private cdr;
     selector: ElementRef;
     data: Array<Select2OptionData>;
     placeholder: string;
@@ -19,10 +20,13 @@ export declare class NgSelect2Component implements AfterViewInit, OnChanges, OnD
     required: boolean;
     options: Options;
     valueChanged: EventEmitter<string | string[]>;
+    onOpen: EventEmitter<string | string[]>;
     private element;
     private check;
     private dropdownId;
-    constructor(renderer: Renderer2, zone: NgZone, _element: ElementRef);
+    private select2?;
+    private isOpen;
+    constructor(renderer: Renderer2, zone: NgZone, _element: ElementRef, cdr: ChangeDetectorRef);
     ngDoCheck(): void;
     ngOnInit(): void;
     ngOnChanges(changes: SimpleChanges): void;
