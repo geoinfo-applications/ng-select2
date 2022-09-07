@@ -2,9 +2,29 @@
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('@angular/forms'), require('@angular/common')) :
     typeof define === 'function' && define.amd ? define('ng-select2', ['exports', '@angular/core', '@angular/forms', '@angular/common'], factory) :
     (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global["ng-select2"] = {}, global.ng.core, global.ng.forms, global.ng.common));
-})(this, (function (exports, core, forms, common) { 'use strict';
+})(this, (function (exports, i0, forms, common) { 'use strict';
 
-    /*! *****************************************************************************
+    function _interopNamespace(e) {
+        if (e && e.__esModule) return e;
+        var n = Object.create(null);
+        if (e) {
+            Object.keys(e).forEach(function (k) {
+                if (k !== 'default') {
+                    var d = Object.getOwnPropertyDescriptor(e, k);
+                    Object.defineProperty(n, k, d.get ? d : {
+                        enumerable: true,
+                        get: function () { return e[k]; }
+                    });
+                }
+            });
+        }
+        n["default"] = e;
+        return Object.freeze(n);
+    }
+
+    var i0__namespace = /*#__PURE__*/_interopNamespace(i0);
+
+    /******************************************************************************
     Copyright (c) Microsoft Corporation.
 
     Permission to use, copy, modify, and/or distribute this software for any
@@ -166,7 +186,11 @@
     var __createBinding = Object.create ? (function (o, m, k, k2) {
         if (k2 === undefined)
             k2 = k;
-        Object.defineProperty(o, k2, { enumerable: true, get: function () { return m[k]; } });
+        var desc = Object.getOwnPropertyDescriptor(m, k);
+        if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+            desc = { enumerable: true, get: function () { return m[k]; } };
+        }
+        Object.defineProperty(o, k2, desc);
     }) : (function (o, m, k, k2) {
         if (k2 === undefined)
             k2 = k;
@@ -321,9 +345,16 @@
             throw new TypeError("Cannot write private member to an object whose class did not declare it");
         return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
     }
+    function __classPrivateFieldIn(state, receiver) {
+        if (receiver === null || (typeof receiver !== "object" && typeof receiver !== "function"))
+            throw new TypeError("Cannot use 'in' operator on non-object");
+        return typeof state === "function" ? receiver === state : state.has(receiver);
+    }
 
+    var _c0 = ["selector"];
+    var _c1 = [[["option"], ["optgroup"]]];
+    var _c2 = ["option, optgroup"];
     var NgSelect2Component = /** @class */ (function () {
-        // private style = `CSS`;
         function NgSelect2Component(renderer, zone, _element) {
             this.renderer = renderer;
             this.zone = zone;
@@ -341,10 +372,15 @@
             // Specify the select's required attribute
             this.required = null;
             // emitter when value is changed
-            this.valueChanged = new core.EventEmitter();
+            this.valueChanged = new i0.EventEmitter();
+            // emitter when the dropdown is opened
+            this.open = new i0.EventEmitter();
+            // emitter to expose the select2 api
+            this.select2Api = new i0.EventEmitter();
             this.element = undefined;
             this.check = false;
             this.dropdownId = Math.floor(Math.random() + Date.now());
+            this.isOpen = false;
             this.propagateChange = function (value) { };
         }
         NgSelect2Component.prototype.ngDoCheck = function () {
@@ -421,12 +457,20 @@
              */
             this.element.on('select2:open', function () {
                 document.querySelector("." + _this.getDropdownIdClass() + " .select2-search__field").focus();
+                if (!_this.isOpen) {
+                    _this.open.emit();
+                }
+                _this.isOpen = true;
+            });
+            this.element.on('select2:close', function () {
+                _this.isOpen = false;
             });
         };
         NgSelect2Component.prototype.ngOnDestroy = function () {
             if (this.element) {
                 this.element.off('select2:select');
                 this.element.off('select2:open');
+                this.element.off('select2:close');
             }
         };
         NgSelect2Component.prototype.initPlugin = function () {
@@ -458,15 +502,16 @@
             if (options.matcher) {
                 jQuery.fn.select2.amd.require(['select2/compat/matcher'], function (oldMatcher) {
                     options.matcher = oldMatcher(options.matcher);
-                    _this.element.select2(options);
+                    _this.select2 = _this.element.select2(options).data('select2');
                     if (typeof _this.value !== 'undefined') {
                         _this.setElementValue(_this.value);
                     }
                 });
             }
             else {
-                this.element.select2(options);
+                this.select2 = this.element.select2(options).data('select2');
             }
+            this.select2Api.emit(this.select2);
             this.renderer.setProperty(this.selector.nativeElement, 'disabled', this.disabled);
         };
         NgSelect2Component.prototype.setElementValue = function (newValue) {
@@ -515,56 +560,104 @@
         };
         return NgSelect2Component;
     }());
-    NgSelect2Component.decorators = [
-        { type: core.Component, args: [{
-                    selector: 'ng-select2',
-                    template: "<select #selector [attr.id]=\"id\" [attr.class]=\"class\" [attr.required]=\"required\">\r\n  <ng-content select=\"option, optgroup\">\r\n  </ng-content>\r\n</select>\r\n",
-                    encapsulation: core.ViewEncapsulation.None,
-                    changeDetection: core.ChangeDetectionStrategy.OnPush,
-                    providers: [
-                        {
-                            provide: forms.NG_VALUE_ACCESSOR,
-                            useExisting: core.forwardRef(function () { return NgSelect2Component; }),
-                            multi: true,
-                        },
-                    ]
-                },] }
-    ];
-    NgSelect2Component.ctorParameters = function () { return [
-        { type: core.Renderer2 },
-        { type: core.NgZone },
-        { type: core.ElementRef }
-    ]; };
-    NgSelect2Component.propDecorators = {
-        selector: [{ type: core.ViewChild, args: ['selector', { static: true },] }],
-        data: [{ type: core.Input }],
-        placeholder: [{ type: core.Input }],
-        dropdownParent: [{ type: core.Input }],
-        allowClear: [{ type: core.Input }],
-        value: [{ type: core.Input }],
-        width: [{ type: core.Input }],
-        disabled: [{ type: core.Input }],
-        id: [{ type: core.Input }],
-        class: [{ type: core.Input }],
-        required: [{ type: core.Input }],
-        options: [{ type: core.Input }],
-        valueChanged: [{ type: core.Output }]
-    };
+    NgSelect2Component.ɵfac = function NgSelect2Component_Factory(t) { return new (t || NgSelect2Component)(i0__namespace.ɵɵdirectiveInject(i0__namespace.Renderer2), i0__namespace.ɵɵdirectiveInject(i0__namespace.NgZone), i0__namespace.ɵɵdirectiveInject(i0__namespace.ElementRef)); };
+    NgSelect2Component.ɵcmp = i0__namespace.ɵɵdefineComponent({ type: NgSelect2Component, selectors: [["ng-select2"]], viewQuery: function NgSelect2Component_Query(rf, ctx) {
+            if (rf & 1) {
+                i0__namespace.ɵɵstaticViewQuery(_c0, true);
+            }
+            if (rf & 2) {
+                var _t = void 0;
+                i0__namespace.ɵɵqueryRefresh(_t = i0__namespace.ɵɵloadQuery()) && (ctx.selector = _t.first);
+            }
+        }, inputs: { data: "data", placeholder: "placeholder", dropdownParent: "dropdownParent", allowClear: "allowClear", value: "value", width: "width", disabled: "disabled", id: "id", class: "class", required: "required", options: "options" }, outputs: { valueChanged: "valueChanged", open: "open", select2Api: "select2Api" }, features: [i0__namespace.ɵɵProvidersFeature([
+                {
+                    provide: forms.NG_VALUE_ACCESSOR,
+                    useExisting: i0.forwardRef(function () { return NgSelect2Component; }),
+                    multi: true,
+                },
+            ]), i0__namespace.ɵɵNgOnChangesFeature], ngContentSelectors: _c2, decls: 3, vars: 3, consts: [["selector", ""]], template: function NgSelect2Component_Template(rf, ctx) {
+            if (rf & 1) {
+                i0__namespace.ɵɵprojectionDef(_c1);
+                i0__namespace.ɵɵelementStart(0, "select", null, 0);
+                i0__namespace.ɵɵprojection(2);
+                i0__namespace.ɵɵelementEnd();
+            }
+            if (rf & 2) {
+                i0__namespace.ɵɵattribute("id", ctx.id)("class", ctx.class)("required", ctx.required);
+            }
+        }, encapsulation: 2, changeDetection: 0 });
+    /*@__PURE__*/ (function () {
+        i0__namespace.ɵsetClassMetadata(NgSelect2Component, [{
+                type: i0.Component,
+                args: [{
+                        selector: 'ng-select2',
+                        templateUrl: './ng-select2.component.html',
+                        encapsulation: i0.ViewEncapsulation.None,
+                        changeDetection: i0.ChangeDetectionStrategy.OnPush,
+                        providers: [
+                            {
+                                provide: forms.NG_VALUE_ACCESSOR,
+                                useExisting: i0.forwardRef(function () { return NgSelect2Component; }),
+                                multi: true,
+                            },
+                        ],
+                    }]
+            }], function () { return [{ type: i0__namespace.Renderer2 }, { type: i0__namespace.NgZone }, { type: i0__namespace.ElementRef }]; }, { selector: [{
+                    type: i0.ViewChild,
+                    args: ['selector', { static: true }]
+                }], data: [{
+                    type: i0.Input
+                }], placeholder: [{
+                    type: i0.Input
+                }], dropdownParent: [{
+                    type: i0.Input
+                }], allowClear: [{
+                    type: i0.Input
+                }], value: [{
+                    type: i0.Input
+                }], width: [{
+                    type: i0.Input
+                }], disabled: [{
+                    type: i0.Input
+                }], id: [{
+                    type: i0.Input
+                }], class: [{
+                    type: i0.Input
+                }], required: [{
+                    type: i0.Input
+                }], options: [{
+                    type: i0.Input
+                }], valueChanged: [{
+                    type: i0.Output
+                }], open: [{
+                    type: i0.Output
+                }], select2Api: [{
+                    type: i0.Output
+                }] });
+    })();
 
     var NgSelect2Module = /** @class */ (function () {
         function NgSelect2Module() {
         }
         return NgSelect2Module;
     }());
-    NgSelect2Module.decorators = [
-        { type: core.NgModule, args: [{
-                    imports: [
-                        common.CommonModule
-                    ],
-                    declarations: [NgSelect2Component],
-                    exports: [NgSelect2Component]
-                },] }
-    ];
+    NgSelect2Module.ɵmod = i0__namespace.ɵɵdefineNgModule({ type: NgSelect2Module });
+    NgSelect2Module.ɵinj = i0__namespace.ɵɵdefineInjector({ factory: function NgSelect2Module_Factory(t) { return new (t || NgSelect2Module)(); }, imports: [[
+                common.CommonModule
+            ]] });
+    (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0__namespace.ɵɵsetNgModuleScope(NgSelect2Module, { declarations: [NgSelect2Component], imports: [common.CommonModule], exports: [NgSelect2Component] }); })();
+    /*@__PURE__*/ (function () {
+        i0__namespace.ɵsetClassMetadata(NgSelect2Module, [{
+                type: i0.NgModule,
+                args: [{
+                        imports: [
+                            common.CommonModule
+                        ],
+                        declarations: [NgSelect2Component],
+                        exports: [NgSelect2Component]
+                    }]
+            }], null, null);
+    })();
 
     /*
      * Public API Surface of ng-select2

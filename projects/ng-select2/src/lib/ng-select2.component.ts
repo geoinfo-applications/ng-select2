@@ -19,7 +19,7 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Select2OptionData } from './ng-select2.interface';
-import { Options } from 'select2';
+import { Options, Select2 } from 'select2';
 
 declare var jQuery: any;
 
@@ -74,10 +74,18 @@ export class NgSelect2Component implements AfterViewInit, OnChanges, OnDestroy, 
   // emitter when value is changed
   @Output() valueChanged = new EventEmitter<string | string[]>();
 
+  // emitter when the dropdown is opened
+  @Output() open = new EventEmitter<string | string[]>();
+
+  // emitter to expose the select2 api
+  @Output() select2Api = new EventEmitter<Select2>();
+
   private element: any = undefined;
   private check = false;
   private dropdownId = Math.floor(Math.random() + Date.now());
   // private style = `CSS`;
+  private select2?: Select2;
+  private isOpen = false;
 
   constructor(private renderer: Renderer2, public zone: NgZone, public _element: ElementRef) {
   }
@@ -174,6 +182,14 @@ export class NgSelect2Component implements AfterViewInit, OnChanges, OnDestroy, 
      */
     this.element.on('select2:open', () => {
       document.querySelector<HTMLInputElement>(`.${this.getDropdownIdClass()} .select2-search__field`).focus();
+      if (!this.isOpen) {
+        this.open.emit();
+      }
+      this.isOpen = true;
+    });
+
+    this.element.on('select2:close', () => {
+      this.isOpen = false;
     });
   }
 
@@ -181,6 +197,7 @@ export class NgSelect2Component implements AfterViewInit, OnChanges, OnDestroy, 
     if (this.element) {
       this.element.off('select2:select');
       this.element.off('select2:open');
+      this.element.off('select2:close');
     }
   }
 
@@ -219,16 +236,17 @@ export class NgSelect2Component implements AfterViewInit, OnChanges, OnDestroy, 
     if (options.matcher) {
       jQuery.fn.select2.amd.require(['select2/compat/matcher'], (oldMatcher: any) => {
         options.matcher = oldMatcher(options.matcher);
-        this.element.select2(options);
+        this.select2 = this.element.select2(options).data('select2');
 
         if (typeof this.value !== 'undefined') {
           this.setElementValue(this.value);
         }
       });
     } else {
-      this.element.select2(options);
+      this.select2 = this.element.select2(options).data('select2');
     }
 
+    this.select2Api.emit(this.select2);
     this.renderer.setProperty(this.selector.nativeElement, 'disabled', this.disabled);
   }
 

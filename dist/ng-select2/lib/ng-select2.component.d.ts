@@ -1,7 +1,8 @@
 import { AfterViewInit, DoCheck, ElementRef, EventEmitter, NgZone, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChanges } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
 import { Select2OptionData } from './ng-select2.interface';
-import { Options } from 'select2';
+import { Options, Select2 } from 'select2';
+import * as i0 from "@angular/core";
 export declare class NgSelect2Component implements AfterViewInit, OnChanges, OnDestroy, OnInit, DoCheck, ControlValueAccessor {
     private renderer;
     zone: NgZone;
@@ -19,9 +20,13 @@ export declare class NgSelect2Component implements AfterViewInit, OnChanges, OnD
     required: boolean;
     options: Options;
     valueChanged: EventEmitter<string | string[]>;
+    open: EventEmitter<string | string[]>;
+    select2Api: EventEmitter<Select2>;
     private element;
     private check;
     private dropdownId;
+    private select2?;
+    private isOpen;
     constructor(renderer: Renderer2, zone: NgZone, _element: ElementRef);
     ngDoCheck(): void;
     ngOnInit(): void;
@@ -36,4 +41,6 @@ export declare class NgSelect2Component implements AfterViewInit, OnChanges, OnD
     registerOnChange(fn: any): void;
     registerOnTouched(): void;
     setDisabledState(isDisabled: boolean): void;
+    static ɵfac: i0.ɵɵFactoryDef<NgSelect2Component, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<NgSelect2Component, "ng-select2", never, { "data": "data"; "placeholder": "placeholder"; "dropdownParent": "dropdownParent"; "allowClear": "allowClear"; "value": "value"; "width": "width"; "disabled": "disabled"; "id": "id"; "class": "class"; "required": "required"; "options": "options"; }, { "valueChanged": "valueChanged"; "open": "open"; "select2Api": "select2Api"; }, never, ["option, optgroup"]>;
 }

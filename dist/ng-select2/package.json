@@ -33,6 +33,8 @@
   "esm2015": "esm2015/ng-select2.js",
   "fesm2015": "fesm2015/ng-select2.js",
   "typings": "ng-select2.d.ts",
-  "metadata": "ng-select2.metadata.json",
-  "sideEffects": false
+  "sideEffects": false,
+  "scripts": {
+    "prepublishOnly": "node --eval \"console.error('ERROR: Trying to publish a package that has been compiled by Ivy. This is not allowed.\\nPlease delete and rebuild the package, without compiling with Ivy, before attempting to publish.\\n')\" && exit 1"
+  }
 }

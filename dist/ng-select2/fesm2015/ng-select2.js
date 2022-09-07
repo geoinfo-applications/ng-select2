@@ -1,9 +1,12 @@
-import { EventEmitter, Component, ViewEncapsulation, ChangeDetectionStrategy, forwardRef, Renderer2, NgZone, ElementRef, ViewChild, Input, Output, NgModule } from '@angular/core';
+import * as i0 from '@angular/core';
+import { EventEmitter, forwardRef, Component, ViewEncapsulation, ChangeDetectionStrategy, ViewChild, Input, Output, NgModule } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
+const _c0 = ["selector"];
+const _c1 = [[["option"], ["optgroup"]]];
+const _c2 = ["option, optgroup"];
 class NgSelect2Component {
-    // private style = `CSS`;
     constructor(renderer, zone, _element) {
         this.renderer = renderer;
         this.zone = zone;
@@ -22,9 +25,14 @@ class NgSelect2Component {
         this.required = null;
         // emitter when value is changed
         this.valueChanged = new EventEmitter();
+        // emitter when the dropdown is opened
+        this.open = new EventEmitter();
+        // emitter to expose the select2 api
+        this.select2Api = new EventEmitter();
         this.element = undefined;
         this.check = false;
         this.dropdownId = Math.floor(Math.random() + Date.now());
+        this.isOpen = false;
         this.propagateChange = (value) => { };
     }
     ngDoCheck() {
@@ -100,12 +108,20 @@ class NgSelect2Component {
          */
         this.element.on('select2:open', () => {
             document.querySelector(`.${this.getDropdownIdClass()} .select2-search__field`).focus();
+            if (!this.isOpen) {
+                this.open.emit();
+            }
+            this.isOpen = true;
+        });
+        this.element.on('select2:close', () => {
+            this.isOpen = false;
         });
     }
     ngOnDestroy() {
         if (this.element) {
             this.element.off('select2:select');
             this.element.off('select2:open');
+            this.element.off('select2:close');
         }
     }
     initPlugin() {
@@ -136,15 +152,16 @@ class NgSelect2Component {
         if (options.matcher) {
             jQuery.fn.select2.amd.require(['select2/compat/matcher'], (oldMatcher) => {
                 options.matcher = oldMatcher(options.matcher);
-                this.element.select2(options);
+                this.select2 = this.element.select2(options).data('select2');
                 if (typeof this.value !== 'undefined') {
                     this.setElementValue(this.value);
                 }
             });
         }
         else {
-            this.element.select2(options);
+            this.select2 = this.element.select2(options).data('select2');
         }
+        this.select2Api.emit(this.select2);
         this.renderer.setProperty(this.selector.nativeElement, 'disabled', this.disabled);
     }
     setElementValue(newValue) {
@@ -181,10 +198,31 @@ class NgSelect2Component {
         this.renderer.setProperty(this.selector.nativeElement, 'disabled', this.disabled);
     }
 }
-NgSelect2Component.decorators = [
-    { type: Component, args: [{
+NgSelect2Component.ɵfac = function NgSelect2Component_Factory(t) { return new (t || NgSelect2Component)(i0.ɵɵdirectiveInject(i0.Renderer2), i0.ɵɵdirectiveInject(i0.NgZone), i0.ɵɵdirectiveInject(i0.ElementRef)); };
+NgSelect2Component.ɵcmp = i0.ɵɵdefineComponent({ type: NgSelect2Component, selectors: [["ng-select2"]], viewQuery: function NgSelect2Component_Query(rf, ctx) { if (rf & 1) {
+        i0.ɵɵstaticViewQuery(_c0, true);
+    } if (rf & 2) {
+        let _t;
+        i0.ɵɵqueryRefresh(_t = i0.ɵɵloadQuery()) && (ctx.selector = _t.first);
+    } }, inputs: { data: "data", placeholder: "placeholder", dropdownParent: "dropdownParent", allowClear: "allowClear", value: "value", width: "width", disabled: "disabled", id: "id", class: "class", required: "required", options: "options" }, outputs: { valueChanged: "valueChanged", open: "open", select2Api: "select2Api" }, features: [i0.ɵɵProvidersFeature([
+            {
+                provide: NG_VALUE_ACCESSOR,
+                useExisting: forwardRef(() => NgSelect2Component),
+                multi: true,
+            },
+        ]), i0.ɵɵNgOnChangesFeature], ngContentSelectors: _c2, decls: 3, vars: 3, consts: [["selector", ""]], template: function NgSelect2Component_Template(rf, ctx) { if (rf & 1) {
+        i0.ɵɵprojectionDef(_c1);
+        i0.ɵɵelementStart(0, "select", null, 0);
+        i0.ɵɵprojection(2);
+        i0.ɵɵelementEnd();
+    } if (rf & 2) {
+        i0.ɵɵattribute("id", ctx.id)("class", ctx.class)("required", ctx.required);
+    } }, encapsulation: 2, changeDetection: 0 });
+/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(NgSelect2Component, [{
+        type: Component,
+        args: [{
                 selector: 'ng-select2',
-                template: "<select #selector [attr.id]=\"id\" [attr.class]=\"class\" [attr.required]=\"required\">\r\n  <ng-content select=\"option, optgroup\">\r\n  </ng-content>\r\n</select>\r\n",
+                templateUrl: './ng-select2.component.html',
                 encapsulation: ViewEncapsulation.None,
                 changeDetection: ChangeDetectionStrategy.OnPush,
                 providers: [
@@ -193,41 +231,58 @@ NgSelect2Component.decorators = [
                         useExisting: forwardRef(() => NgSelect2Component),
                         multi: true,
                     },
-                ]
-            },] }
-];
-NgSelect2Component.ctorParameters = () => [
-    { type: Renderer2 },
-    { type: NgZone },
-    { type: ElementRef }
-];
-NgSelect2Component.propDecorators = {
-    selector: [{ type: ViewChild, args: ['selector', { static: true },] }],
-    data: [{ type: Input }],
-    placeholder: [{ type: Input }],
-    dropdownParent: [{ type: Input }],
-    allowClear: [{ type: Input }],
-    value: [{ type: Input }],
-    width: [{ type: Input }],
-    disabled: [{ type: Input }],
-    id: [{ type: Input }],
-    class: [{ type: Input }],
-    required: [{ type: Input }],
-    options: [{ type: Input }],
-    valueChanged: [{ type: Output }]
-};
+                ],
+            }]
+    }], function () { return [{ type: i0.Renderer2 }, { type: i0.NgZone }, { type: i0.ElementRef }]; }, { selector: [{
+            type: ViewChild,
+            args: ['selector', { static: true }]
+        }], data: [{
+            type: Input
+        }], placeholder: [{
+            type: Input
+        }], dropdownParent: [{
+            type: Input
+        }], allowClear: [{
+            type: Input
+        }], value: [{
+            type: Input
+        }], width: [{
+            type: Input
+        }], disabled: [{
+            type: Input
+        }], id: [{
+            type: Input
+        }], class: [{
+            type: Input
+        }], required: [{
+            type: Input
+        }], options: [{
+            type: Input
+        }], valueChanged: [{
+            type: Output
+        }], open: [{
+            type: Output
+        }], select2Api: [{
+            type: Output
+        }] }); })();
 
 class NgSelect2Module {
 }
-NgSelect2Module.decorators = [
-    { type: NgModule, args: [{
+NgSelect2Module.ɵmod = i0.ɵɵdefineNgModule({ type: NgSelect2Module });
+NgSelect2Module.ɵinj = i0.ɵɵdefineInjector({ factory: function NgSelect2Module_Factory(t) { return new (t || NgSelect2Module)(); }, imports: [[
+            CommonModule
+        ]] });
+(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(NgSelect2Module, { declarations: [NgSelect2Component], imports: [CommonModule], exports: [NgSelect2Component] }); })();
+/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(NgSelect2Module, [{
+        type: NgModule,
+        args: [{
                 imports: [
                     CommonModule
                 ],
                 declarations: [NgSelect2Component],
                 exports: [NgSelect2Component]
-            },] }
-];
+            }]
+    }], null, null); })();
 
 /*
  * Public API Surface of ng-select2
