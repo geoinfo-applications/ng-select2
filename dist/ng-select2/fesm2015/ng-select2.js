@@ -3,9 +3,6 @@ import { EventEmitter, forwardRef, Component, ViewEncapsulation, ChangeDetection
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
-const _c0 = ["selector"];
-const _c1 = [[["option"], ["optgroup"]]];
-const _c2 = ["option, optgroup"];
 class NgSelect2Component {
     constructor(renderer, zone, _element) {
         this.renderer = renderer;
@@ -199,26 +196,14 @@ class NgSelect2Component {
     }
 }
 NgSelect2Component.ɵfac = function NgSelect2Component_Factory(t) { return new (t || NgSelect2Component)(i0.ɵɵdirectiveInject(i0.Renderer2), i0.ɵɵdirectiveInject(i0.NgZone), i0.ɵɵdirectiveInject(i0.ElementRef)); };
-NgSelect2Component.ɵcmp = i0.ɵɵdefineComponent({ type: NgSelect2Component, selectors: [["ng-select2"]], viewQuery: function NgSelect2Component_Query(rf, ctx) { if (rf & 1) {
-        i0.ɵɵstaticViewQuery(_c0, true);
-    } if (rf & 2) {
-        let _t;
-        i0.ɵɵqueryRefresh(_t = i0.ɵɵloadQuery()) && (ctx.selector = _t.first);
-    } }, inputs: { data: "data", placeholder: "placeholder", dropdownParent: "dropdownParent", allowClear: "allowClear", value: "value", width: "width", disabled: "disabled", id: "id", class: "class", required: "required", options: "options" }, outputs: { valueChanged: "valueChanged", open: "open", select2Api: "select2Api" }, features: [i0.ɵɵProvidersFeature([
-            {
-                provide: NG_VALUE_ACCESSOR,
-                useExisting: forwardRef(() => NgSelect2Component),
-                multi: true,
-            },
-        ]), i0.ɵɵNgOnChangesFeature], ngContentSelectors: _c2, decls: 3, vars: 3, consts: [["selector", ""]], template: function NgSelect2Component_Template(rf, ctx) { if (rf & 1) {
-        i0.ɵɵprojectionDef(_c1);
-        i0.ɵɵelementStart(0, "select", null, 0);
-        i0.ɵɵprojection(2);
-        i0.ɵɵelementEnd();
-    } if (rf & 2) {
-        i0.ɵɵattribute("id", ctx.id)("class", ctx.class)("required", ctx.required);
-    } }, encapsulation: 2, changeDetection: 0 });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(NgSelect2Component, [{
+NgSelect2Component.ɵcmp = i0.ɵɵngDeclareComponent({ version: "11.2.14", type: NgSelect2Component, selector: "ng-select2", inputs: { data: "data", placeholder: "placeholder", dropdownParent: "dropdownParent", allowClear: "allowClear", value: "value", width: "width", disabled: "disabled", id: "id", class: "class", required: "required", options: "options" }, outputs: { valueChanged: "valueChanged", open: "open", select2Api: "select2Api" }, providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => NgSelect2Component),
+            multi: true,
+        },
+    ], viewQueries: [{ propertyName: "selector", first: true, predicate: ["selector"], emitDistinctChangesOnly: false, descendants: true, static: true }], usesOnChanges: true, ngImport: i0, template: "<select #selector [attr.id]=\"id\" [attr.class]=\"class\" [attr.required]=\"required\">\r\n  <ng-content select=\"option, optgroup\">\r\n  </ng-content>\r\n</select>\r\n", changeDetection: i0.ChangeDetectionStrategy.OnPush, encapsulation: i0.ViewEncapsulation.None });
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(NgSelect2Component, [{
         type: Component,
         args: [{
                 selector: 'ng-select2',
@@ -268,12 +253,13 @@ NgSelect2Component.ɵcmp = i0.ɵɵdefineComponent({ type: NgSelect2Component, se
 
 class NgSelect2Module {
 }
+NgSelect2Module.ɵfac = function NgSelect2Module_Factory(t) { return new (t || NgSelect2Module)(); };
 NgSelect2Module.ɵmod = i0.ɵɵdefineNgModule({ type: NgSelect2Module });
-NgSelect2Module.ɵinj = i0.ɵɵdefineInjector({ factory: function NgSelect2Module_Factory(t) { return new (t || NgSelect2Module)(); }, imports: [[
+NgSelect2Module.ɵinj = i0.ɵɵdefineInjector({ imports: [[
             CommonModule
         ]] });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(NgSelect2Module, { declarations: [NgSelect2Component], imports: [CommonModule], exports: [NgSelect2Component] }); })();
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(NgSelect2Module, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(NgSelect2Module, [{
         type: NgModule,
         args: [{
                 imports: [
